@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اینفوگرافیک جامع «کل» — تحلیل کل برنامه‌ها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(255,255,255,.10);
+    --txt:#e8ecf7;
+    --muted:#96a3bf;
+    --c1:#26d0a5; --c2:#4f8cff; --c3:#ffb020; --c4:#ff6b8a;
+    --c5:#a78bfa; --c6:#22d3ee; --c7:#84cc16; --c8:#f472b6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Vazirmatn',system-ui,-apple-system,sans-serif;
+    color:var(--txt);
+    background:
+      radial-gradient(1100px 620px at 85% -12%, rgba(79,140,255,.20), transparent 62%),
+      radial-gradient(900px 520px at 8% 6%, rgba(38,208,165,.14), transparent 60%),
+      radial-gradient(800px 500px at 50% 110%, rgba(167,139,250,.14), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+    padding:26px 16px 70px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+
+  .hero{
+    position:relative;overflow:hidden;text-align:center;
+    padding:44px 24px 38px;border-radius:30px;margin-bottom:24px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(160deg, rgba(79,140,255,.18), rgba(167,139,250,.10) 45%, rgba(38,208,165,.12));
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.9);
+  }
+  .hero::after{
+    content:"";position:absolute;inset:-40% -10% auto auto;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle, rgba(79,140,255,.35), transparent 65%);
+    filter:blur(20px);pointer-events:none;
+  }
+  .pill{
+    display:inline-block;font-size:13px;padding:7px 16px;border-radius:999px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    color:#cfd9f2;letter-spacing:.2px;
+  }
+  .hero h1{
+    font-size:clamp(42px,7.6vw,78px);line-height:1.1;margin:16px 0 6px;font-weight:800;
+    background:linear-gradient(100deg,#ffffff,#9dc3ff 40%,#5ff0c6 75%,#ffffff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 8px 30px rgba(79,140,255,.35));
+  }
+  .hero p{margin:8px auto 0;max-width:760px;color:#b9c5df;font-size:15px;line-height:1.9}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{
+    position:relative;overflow:hidden;padding:22px 20px;border-radius:22px;
+    background:var(--card);border:1px solid var(--line);
+    backdrop-filter:blur(10px);transition:transform .3s ease, border-color .3s ease;
+  }
+  .kpi::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--ac,var(--c2))}
+  .kpi:hover{transform:translateY(-5px);border-color:rgba(79,140,255,.45)}
+  .kpi .val{font-size:36px;font-weight:800;line-height:1.15;color:#fff}
+  .kpi .val small{font-size:14px;font-weight:500;color:var(--muted);margin-inline-start:6px}
+  .kpi .lbl{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.7}
+  .kpi .ic{position:absolute;inset-inline-start:16px;top:16px;font-size:22px;opacity:.35}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;
+    backdrop-filter:blur(10px);box-shadow:0 18px 46px -34px rgba(0,0,0,.9);
+  }
+  .card h2{margin:0 0 4px;font-size:18px;font-weight:700;display:flex;align-items:center;gap:9px}
+  .card h2 .dot{width:9px;height:9px;border-radius:50%;background:var(--c2);box-shadow:0 0 12px var(--c2)}
+  .card .hint{margin:0 0 18px;font-size:12.5px;color:var(--muted);line-height:1.8}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+  section.block{margin-bottom:22px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+
+  .donut-wrap{display:flex;justify-content:center;margin:4px 0 14px}
+  .donut-wrap svg{overflow:visible}
+  .donut-seg{cursor:pointer;transition:opacity .25s ease}
+  .donut-center-num{font-size:30px;font-weight:800;fill:#fff}
+  .donut-center-lbl{font-size:12px;fill:#96a3bf}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+  .lg{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:12px;cursor:pointer;
+      transition:background .2s ease;font-size:12.8px}
+  .lg:hover{background:rgba(255,255,255,.06)}
+  .lg i{width:10px;height:10px;border-radius:3px;flex:none}
+  .lg span{flex:1;color:#c8d2e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lg b{color:#fff;font-weight:600;font-size:12px}
+  .lg em{color:var(--muted);font-style:normal;font-size:11.5px;min-width:44px;text-align:left}
+
+  .bar-row{display:grid;grid-template-columns:180px 1fr 90px;align-items:center;gap:12px;margin-bottom:13px}
+  .bar-row .bl{font-size:13px;color:#cbd5ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .track{height:13px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+  .fill{height:100%;width:0;border-radius:999px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .bar-row .bv{font-size:12.5px;color:#e7edfb;text-align:left;font-weight:600}
+  @media(max-width:560px){.bar-row{grid-template-columns:110px 1fr 70px}.bar-row .bl{font-size:11.5px}}
+
+  .tl{position:relative}
+  .tl::before{
+    content:"";position:absolute;inset-inline-end:11px;top:10px;bottom:10px;width:2px;
+    background:linear-gradient(180deg,rgba(79,140,255,.7),rgba(38,208,165,.6),rgba(167,139,250,.6));
+    border-radius:2px;
+  }
+  .tl-item{position:relative;padding-inline-end:40px;margin-bottom:20px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-item::before{
+    content:"";position:absolute;inset-inline-end:5px;top:10px;width:14px;height:14px;border-radius:50%;
+    background:var(--dot,#4f8cff);box-shadow:0 0 0 4px rgba(79,140,255,.16), 0 0 16px var(--dot,#4f8cff);
+  }
+  .tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:2px}
+  .tl-date{font-weight:700;font-size:14.5px;color:#fff}
+  .tl-tag{font-size:11.5px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.07);
+          border:1px solid rgba(255,255,255,.12);color:#cfd8ee}
+  .tl-num{font-size:11.5px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;font-size:12.3px;padding:5px 11px;border-radius:999px;
+    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#d3dcf0;
+  }
+  .chip i{width:7px;height:7px;border-radius:50%;flex:none}
+  .chip em{font-style:normal;color:#8ea0c2;font-size:11.3px}
+
+  .tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .tools input,.tools select{
+    font-family:inherit;font-size:13px;color:#e8ecf7;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:10px 14px;outline:none;
+  }
+  .tools input{flex:1;min-width:170px}
+  .tools input:focus,.tools select:focus{border-color:rgba(79,140,255,.6);box-shadow:0 0 0 3px rgba(79,140,255,.15)}
+  .tools select option{background:#141b2e;color:#e8ecf7}
+  .table-wrap{max-height:480px;overflow:auto;border-radius:16px;border:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;font-size:13.3px}
+  thead th{
+    position:sticky;top:0;z-index:2;background:#151d33;color:#aab8d6;font-weight:600;
+    padding:12px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  tbody td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.055);color:#d7dff1}
+  tbody tr:hover td{background:rgba(79,140,255,.09)}
+  tbody tr:last-child td{border-bottom:none}
+  .mini-bar{display:inline-block;height:7px;border-radius:999px;vertical-align:middle;margin-inline-end:8px}
+  .empty{padding:26px;text-align:center;color:var(--muted)}
+  .badge{display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:999px;margin-inline-start:4px;
+         background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#bcc8e2}
+
+  footer{max-width:1180px;margin:34px auto 0;text-align:center;color:#6f7d9b;font-size:12.5px;line-height:2}
+  footer b{color:#a9b6d4}
+
+  @media(max-width:560px){
+    .legend{grid-template-columns:1fr}
+    .card{padding:18px;border-radius:20px}
+    .hero{padding:32px 18px 28px;border-radius:24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="pill">بانک جامع «کل» · همه برنامه‌ها · طبقات ب/ج/د</span>
+    <h1>کل</h1>
+    <p>تحلیل جامع کل برنامه‌های ثبت‌شده در بانک «کل»؛ مروری بر ۸۵ برنامه یکتا، ۳ طبقه، ۸ ساختار تولید، بیش از ۱٬۵۰۰ موضوع درخت‌واره و ده‌ها هزار دقیقه محتوای رسانه‌ای</p>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="block grid2">
+    <div class="card">
+      <h2><span class="dot" style="--c2:#4f8cff"></span>سهم طبقات برنامه</h2>
+      <p class="hint">توزیع زمان کل بر اساس طبقهٔ برنامه (ب / ج / د)</p>
+      <div class="donut-wrap">
+        <svg id="donut" width="260" height="260" viewBox="0 0 260 260" role="img" aria-label="نمودار حلقه‌ای سهم طبقات"></svg>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot" style="--c2:#26d0a5"></span>مدت زمان به تفکیک ساختار</h2>
+      <p class="hint">مجموع دقایق هر ساختار تولید در کل بانک</p>
+      <div id="bars"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="card">
+      <h2><span class="dot" style="--c2:#ffb020"></span>برترین برنامه‌ها بر اساس مجموع زمان</h2>
+      <p class="hint">۱۵ برنامه با بیشترین دقایق ثبت‌شده در بانک «کل»</p>
+      <div id="topPrograms"></div>
+    </div>
+  </section>
+
+  <section class="block grid2">
+    <div class="card">
+      <h2><span class="dot" style="--c2:#a78bfa"></span>پرتکرارترین موضوعات درخت‌واره</h2>
+      <p class="hint">موضوعاتی که در بیشترین تعداد رکورد تکرار شده‌اند</p>
+      <div id="topTopics"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot" style="--c2:#f472b6"></span>جدول طبقات</h2>
+      <p class="hint">تعداد برنامه، دقایق و سهم هر طبقه</p>
+      <div class="table-wrap" style="max-height:340px">
+        <table>
+          <thead>
+            <tr><th>طبقه</th><th>برنامه</th><th>دقیقه</th><th>سهم</th></tr>
+          </thead>
+          <tbody id="classTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="card">
+      <h2><span class="dot" style="--c2:#22d3ee"></span>خط زمانی برنامه‌های شاخص</h2>
+      <p class="hint">مرور زمانی مهم‌ترین برنامه‌ها و رویدادهای ثبت‌شده در بانک «کل»</p>
+      <div class="tl" id="timeline"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="card">
+      <h2><span class="dot" style="--c2:#84cc16"></span>جدول کامل برنامه‌ها</h2>
+      <p class="hint">۸۵ برنامه یکتا با مجموع دقایق، طبقه و ساختار — قابل جست‌وجو و فیلتر</p>
+      <div class="tools">
+        <input id="search" type="search" placeholder="جست‌وجوی برنامه… (مثلاً تجمعات، روشنا، گفتمان)">
+        <select id="filterClass"></select>
+        <select id="filterStruct"></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>برنامه</th><th>طبقه</th><th>ساختار</th><th>مدت کل</th><th>تعداد موضوع</th></tr>
+          </thead>
+          <tbody id="dataTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    منبع داده: فایل <b>کل.xlsx</b> · برگهٔ RadGridExport<br>
+    اینفوگرافیک تحلیلی — ساخته‌شده با HTML / CSS / JavaScript
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   1) داده‌های تجمیعی بانک «کل»
+   ========================================================= */
+const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const toFa = v => String(v).replace(/\d/g, d => FA_DIGITS[+d]);
+const MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+
+function faDate(iso){
+  const [y,m,d] = iso.split('/').map(Number);
+  return `${toFa(d)} ${MONTHS[m-1]} ${toFa(y)}`;
+}
+function durFa(min){
+  const mm = Math.floor(min), ss = Math.round((min - mm) * 60);
+  return ss ? toFa(`${mm}:${String(ss).padStart(2,'0')}`) : toFa(mm);
+}
+function durLabel(min){
+  const h = Math.floor(min/60), m = Math.round(min%60);
+  if (h && m) return `${toFa(h)}:${String(m).padStart(2,'0')} ساعت`;
+  if (h) return `${toFa(h)} ساعت`;
+  return `${toFa(m)} دقیقه`;
+}
+
+/* ---------- طبقات ---------- */
+const CLASS_META = {
+  'ب': {color:'#ffb020', label:'ب'},
+  'ج': {color:'#4f8cff', label:'ج'},
+  'د': {color:'#26d0a5', label:'د'}
+};
+
+/* ---------- ساختارها ---------- */
+const STRUCT_META = {
+  'پوشش رویداد':        {color:'#4f8cff'},
+  'تركيبي فاقد نمايش':  {color:'#26d0a5'},
+  'ترکیبی ساده':        {color:'#ffb020'},
+  'گفتگوی تخصصی':       {color:'#a78bfa'},
+  'سخنرانی - کارشناسی': {color:'#22d3ee'},
+  'مستند گزارشي':       {color:'#f472b6'},
+  'تركيبي نمايشي':      {color:'#84cc16'},
+  'مستند محض':          {color:'#ff6b8a'}
+};
+
+/* ---------- برنامه‌ها (تجمیع‌شده از بانک کل) ---------- */
+const PROGRAMS = [
+  {name:'اربعین مرز باشماق',          cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:4320, topics:48},
+  {name:'محرم ۱۴۰۵',                   cls:'د', struct:'پوشش رویداد',        minutes:1260, topics:30},
+  {name:'تجمعات شبانه سنندج ۲',        cls:'د', struct:'پوشش رویداد',        minutes:1500, topics:220},
+  {name:'تجمعات شبانه شهرستان',        cls:'د', struct:'پوشش رویداد',        minutes:1200, topics:160},
+  {name:'باید برخواست -- ۲',           cls:'د', struct:'پوشش رویداد',        minutes:1050, topics:50},
+  {name:'ایران استوار - ۱',            cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:1000, topics:20},
+  {name:'تجمعات شبانه ۱',              cls:'د', struct:'پوشش رویداد',        minutes:1000, topics:130},
+  {name:'تجمعات شبانه ۲ - ۲',          cls:'د', struct:'پوشش رویداد',        minutes:1000, topics:60},
+  {name:'مناسبت‌ها - ۲',                cls:'د', struct:'پوشش رویداد',        minutes:900,  topics:60},
+  {name:'روشنا',                        cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:800,  topics:120},
+  {name:'ژین و ئه وین .. ۱',           cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:750,  topics:110},
+  {name:'ژین وئه ین ۲ - ۲',            cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:750,  topics:100},
+  {name:'تجمعات شبانه ۳',              cls:'د', struct:'پوشش رویداد',        minutes:750,  topics:70},
+  {name:'بر شانه‌هایمان آفتاب ۱ و ۲',  cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:720,  topics:40},
+  {name:'روشنا ۲',                      cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:675,  topics:65},
+  {name:'ملت بیدارتر ۱',               cls:'د', struct:'سخنرانی - کارشناسی',  minutes:600,  topics:140},
+  {name:'سلام آبیدر ۱',                cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:600,  topics:90},
+  {name:'ژین وئه ین ۳',                cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:500,  topics:45},
+  {name:'بازگشایی مدارس (نوروز دانش)', cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:480,  topics:2},
+  {name:'ملت بیدارتر',                 cls:'د', struct:'ترکیبی ساده',        minutes:450,  topics:80},
+  {name:'په پوله کانی نیشتمان',        cls:'ج', struct:'تركيبي نمايشي',       minutes:450,  topics:60},
+  {name:'مناسبت ها - ۲',                cls:'د', struct:'پوشش رویداد',        minutes:450,  topics:5},
+  {name:'رویداد بین‌المللی «امت مقاومت»', cls:'ج', struct:'مستند گزارشي',     minutes:450,  topics:5},
+  {name:'موج ورزش ۲ - ۲',              cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:400,  topics:35},
+  {name:'به ره و روناکی ۲ - ۲',        cls:'د', struct:'ترکیبی ساده',        minutes:400,  topics:80},
+  {name:'ضربان ۲ - ۲',                 cls:'د', struct:'گفتگوی تخصصی',       minutes:400,  topics:40},
+  {name:'روژمان ۲',                    cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:400,  topics:50},
+  {name:'مناسبت‌ها - ۳',                cls:'د', struct:'پوشش رویداد',        minutes:390,  topics:8},
+  {name:'به ره و روناکی ۱',            cls:'د', struct:'ترکیبی ساده',        minutes:375,  topics:100},
+  {name:'امت احمد',                    cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:360,  topics:6},
+  {name:'بیره‌وەری ۲ - ۲',             cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:350,  topics:30},
+  {name:'نمایشگاه کتاب استان',          cls:'د', struct:'پوشش رویداد',        minutes:320,  topics:4},
+  {name:'مناسبت ۱',                     cls:'د', struct:'پوشش رویداد',        minutes:310,  topics:12},
+  {name:'په پوله کانی نیشتمان ۱',      cls:'ج', struct:'تركيبي نمايشي',       minutes:300,  topics:50},
+  {name:'لاوانی کورد ۲',               cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:300,  topics:60},
+  {name:'نماز جمعه سنندج ۲ - ۲',        cls:'د', struct:'سخنرانی - کارشناسی',  minutes:300,  topics:50},
+  {name:'عقلی سور',                     cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:280,  topics:35},
+  {name:'خط مقدم (ویژه دفاع مقدس)',    cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:270,  topics:6},
+  {name:'گفتمان',                       cls:'د', struct:'گفتگوی تخصصی',       minutes:250,  topics:45},
+  {name:'موج ورزش',                     cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:250,  topics:35},
+  {name:'تجمعات شبانه ۱ - ۱',           cls:'د', struct:'پوشش رویداد',        minutes:250,  topics:30},
+  {name:'خورشید بر شانه دریا',          cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:240,  topics:40},
+  {name:'روایت حضور',                   cls:'د', struct:'پوشش رویداد',        minutes:240,  topics:24},
+  {name:'نماز جمعه سنندج ۱',            cls:'د', struct:'سخنرانی - کارشناسی',  minutes:240,  topics:40},
+  {name:'در مسیر وحدت',                 cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:210,  topics:24},
+  {name:'یادواره رهبر مجاهد شهید',      cls:'د', struct:'پوشش رویداد',        minutes:210,  topics:42},
+  {name:'به ره و روناکی ۳',            cls:'د', struct:'ترکیبی ساده',        minutes:200,  topics:50},
+  {name:'نماز جمعه شهرستان ۲ - ۲',       cls:'د', struct:'سخنرانی - کارشناسی',  minutes:200,  topics:50},
+  {name:'کنگره شهدا',                   cls:'د', struct:'پوشش رویداد',        minutes:200,  topics:10},
+  {name:'گه شه ی به رهه م',             cls:'د', struct:'ترکیبی ساده',        minutes:180,  topics:35},
+  {name:'خط نبرد',                      cls:'ج', struct:'مستند گزارشي',       minutes:160,  topics:40},
+  {name:'شعار سال ۱',                   cls:'د', struct:'ترکیبی ساده',        minutes:150,  topics:5},
+  {name:'رویداد (هفته دولت',            cls:'د', struct:'گفتگوی تخصصی',       minutes:150,  topics:25},
+  {name:'ضربان',                         cls:'د', struct:'گفتگوی تخصصی',       minutes:150,  topics:8},
+  {name:'ضران',                          cls:'د', struct:'گفتگوی تخصصی',       minutes:150,  topics:15},
+  {name:'نماز جمعه سنندج ۳',            cls:'د', struct:'سخنرانی - کارشناسی',  minutes:150,  topics:25},
+  {name:'ژین وئه ین ۱ - ۱',            cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:150,  topics:20},
+  {name:'ریگا',                          cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:140,  topics:14},
+  {name:'ریگا ۳',                       cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:140,  topics:4},
+  {name:'سربازان عدالت',                cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:140,  topics:16},
+  {name:'مهرنشینان',                    cls:'ب', struct:'مستند محض',          minutes:120,  topics:18},
+  {name:'جانفدا',                        cls:'د', struct:'پوشش رویداد',        minutes:120,  topics:4},
+  {name:'نیشتمان',                       cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:105,  topics:14},
+  {name:'ئه وینداران',                  cls:'ج', struct:'مستند گزارشي',       minutes:90,   topics:12},
+  {name:'عید قربان',                     cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:90,   topics:9},
+  {name:'صد حضور صد حماسه',            cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:70,   topics:5},
+  {name:'پیشگامان ۲',                   cls:'ج', struct:'مستند گزارشي',       minutes:60,   topics:4},
+  {name:'مستوره ۲',                     cls:'ج', struct:'مستند گزارشي',       minutes:60,   topics:6},
+  {name:'مواسات',                       cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:60,   topics:10},
+  {name:'دعای عرفه و عید قربان',        cls:'د', struct:'پوشش رویداد',        minutes:60,   topics:14},
+  {name:'با نمایندگان',                 cls:'د', struct:'گفتگوی تخصصی',       minutes:60,   topics:2},
+  {name:'از سنگر تا سپیدار',            cls:'ب', struct:'مستند محض',          minutes:55,   topics:3},
+  {name:'میدان یار',                     cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:40,   topics:4},
+  {name:'فرهنگنامه ۱',                  cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:30,   topics:2},
+  {name:'گلزار شهدا',                    cls:'د', struct:'پوشش رویداد',        minutes:25,   topics:8},
+  {name:'چشمه نوش',                     cls:'د', struct:'سخنرانی - کارشناسی',  minutes:25,   topics:10},
+  {name:'پیشگامان',                     cls:'ج', struct:'مستند گزارشي',       minutes:20,   topics:5},
+  {name:'عیار خاک',                      cls:'ب', struct:'مستند محض',          minutes:15,   topics:3},
+  {name:'سه رنج ۱',                     cls:'ج', struct:'تركيبي فاقد نمايش',  minutes:15,   topics:2},
+  {name:'سرو ایستاده',                  cls:'د', struct:'تركيبی ساده',        minutes:15,   topics:5},
+  {name:'رویداد',                        cls:'د', struct:'گفتگوی تخصصی',       minutes:60,   topics:5}
+];
+
+/* ---------- محاسبه طبقات ---------- */
+function aggregateBy(list, key){
+  const map = {};
+  list.forEach(p => {
+    if (!map[p[key]]) map[p[key]] = {name:p[key], minutes:0, count:0, topics:0, programs:new Set()};
+    map[p[key]].minutes += p.minutes;
+    map[p[key]].topics += p.topics;
+    map[p[key]].programs.add(p.name);
+  });
+  return Object.values(map).map(x => ({...x, count:x.programs.size}));
+}
+
+const CLASSES = aggregateBy(PROGRAMS, 'cls')
+  .map(c => ({...c, color: (CLASS_META[c.name]||{}).color || '#94a3b8'}))
+  .sort((a,b) => b.minutes - a.minutes);
+
+const STRUCTS = aggregateBy(PROGRAMS, 'struct')
+  .map(s => ({...s, color: (STRUCT_META[s.name]||{}).color || '#94a3b8'}))
+  .sort((a,b) => b.minutes - a.minutes);
+
+const TOTAL_MIN = PROGRAMS.reduce((s,p) => s+p.minutes, 0);
+const TOTAL_PROGRAMS = PROGRAMS.length;
+const TOTAL_TOPICS = PROGRAMS.reduce((s,p) => s+p.topics, 0);
+
+/* ---------- پرتکرارترین موضوعات (نمونه از داده) ---------- */
+const TOP_TOPICS = [
+  {name:'همدلی',                    freq:240, color:'#26d0a5'},
+  {name:'ایران',                     freq:200, color:'#4f8cff'},
+  {name:'دشمن‌شناسی و استکبارستیزی', freq:185, color:'#ff6b8a'},
+  {name:'همبستگی اجتماعی',           freq:130, color:'#ffb020'},
+  {name:'رژیم صهیونیستی',            freq:120, color:'#a78bfa'},
+  {name:'حفظ وحدت و شوکت نظام',     freq:105, color:'#22d3ee'},
+  {name:'مبارزه با ظلم و ظالم',     freq:100, color:'#f472b6'},
+  {name:'همبستگی ملی',               freq:95,  color:'#84cc16'},
+  {name:'حمله، تهاجم',               freq:90,  color:'#4f8cff'},
+  {name:'روحیه جهادی و مقاومت',     freq:85,  color:'#26d0a5'},
+  {name:'اقتدار',                    freq:80,  color:'#ffb020'},
+  {name:'خانواده',                   freq:70,  color:'#a78bfa'}
+];
+
+/* =========================================================
+   2) KPI
+   ========================================================= */
+const KPIS = [
+  {val:TOTAL_PROGRAMS, lbl:'برنامه یکتا',                 ic:'📺', ac:'#4f8cff'},
+  {val:3,              lbl:'طبقه (ب / ج / د)',            ic:'🏷', ac:'#26d0a5'},
+  {val:8,              lbl:'ساختار تولید',                 ic:'🎬', ac:'#ffb020'},
+  {val:TOTAL_TOPICS,   lbl:'رکورد موضوعی ثبت‌شده',         ic:'🌳', ac:'#a78bfa'},
+  {val:Math.round(TOTAL_MIN/60), lbl:'ساعت محتوای کل',    ic:'⏱', ac:'#f472b6'}
+];
+
+const kpiBox = document.getElementById('kpis');
+KPIS.forEach((k,i) => {
+  const d = document.createElement('div');
+  d.className = 'kpi';
+  d.style.setProperty('--ac', k.ac);
+  d.innerHTML = `<div class="ic">${k.ic}</div>
+                 <div class="val"><span data-num="${k.val}">۰</span><small>${k.suf||''}</small></div>
+                 <div class="lbl">${k.lbl}</div>`;
+  kpiBox.appendChild(d);
+  const el = d.querySelector('[data-num]');
+  setTimeout(() => countUp(el, k.val), 120 + i*90);
+});
+
+function countUp(el, target, duration=1100){
+  const start = performance.now();
+  function step(now){
+    const p = Math.min((now-start)/duration, 1);
+    const v = Math.round(target * (1 - Math.pow(1-p,3)));
+    el.textContent = toFa(v);
+    if (p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* =========================================================
+   3) نمودار حلقه‌ای — طبقات
+   ========================================================= */
+(function buildDonut(){
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('donut');
+  const CX=130, CY=130, R=90, SW=26;
+  const C=2*Math.PI*R;
+
+  const bg=document.createElementNS(NS,'circle');
+  bg.setAttribute('cx',CX); bg.setAttribute('cy',CY); bg.setAttribute('r',R);
+  bg.setAttribute('fill','none');
+  bg.setAttribute('stroke','rgba(255,255,255,.06)');
+  bg.setAttribute('stroke-width',SW);
+  svg.appendChild(bg);
+
+  let offset=0;
+  const segs=[];
+
+  CLASSES.forEach((c,i)=>{
+    const len=(c.minutes/TOTAL_MIN)*C;
+    const seg=document.createElementNS(NS,'circle');
+    seg.setAttribute('cx',CX); seg.setAttribute('cy',CY); seg.setAttribute('r',R);
+    seg.setAttribute('fill','none');
+    seg.setAttribute('stroke',c.color);
+    seg.setAttribute('stroke-width',SW);
+    seg.setAttribute('transform',`rotate(-90 ${CX} ${CY})`);
+    seg.style.strokeDasharray=`0 ${C}`;
+    seg.style.strokeDashoffset=String(-offset);
+    seg.style.transition='stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1), opacity .25s ease';
+    seg.setAttribute('class','donut-seg');
+    seg.dataset.idx=i;
+    svg.appendChild(seg);
+    segs.push(seg);
+    setTimeout(()=>{
+      const gap=2.5;
+      seg.style.strokeDasharray=`${Math.max(len-gap,0)} ${C-len+gap}`;
+    }, 160+i*95);
+    offset+=len;
+  });
+
+  const t1=document.createElementNS(NS,'text');
+  t1.setAttribute('x',CX); t1.setAttribute('y',CY-2);
+  t1.setAttribute('text-anchor','middle');
+  t1.setAttribute('class','donut-center-num');
+  t1.setAttribute('direction','rtl');
+  t1.textContent=toFa(TOTAL_PROGRAMS);
+  svg.appendChild(t1);
+
+  const t2=document.createElementNS(NS,'text');
+  t2.setAttribute('x',CX); t2.setAttribute('y',CY+24);
+  t2.setAttribute('text-anchor','middle');
+  t2.setAttribute('class','donut-center-lbl');
+  t2.setAttribute('direction','rtl');
+  t2.textContent='برنامه';
+  svg.appendChild(t2);
+
+  const legend=document.getElementById('legend');
+  CLASSES.forEach((c,i)=>{
+    const pct=((c.minutes/TOTAL_MIN)*100).toFixed(1);
+    const d=document.createElement('div');
+    d.className='lg';
+    d.innerHTML=`<i style="background:${c.color};box-shadow:0 0 10px ${c.color}"></i>
+                 <span>طبقه ${c.name}</span>
+                 <b>${toFa(c.count)} برنامه</b>
+                 <em>${toFa(pct)}٪</em>`;
+    d.addEventListener('mouseenter',()=>highlight(i));
+    d.addEventListener('mouseleave',()=>highlight(-1));
+    legend.appendChild(d);
+  });
+
+  segs.forEach(s=>{
+    s.addEventListener('mouseenter',()=>highlight(+s.dataset.idx));
+    s.addEventListener('mouseleave',()=>highlight(-1));
+  });
+
+  function highlight(idx){
+    segs.forEach((s,i)=>s.style.opacity=(idx===-1||i===idx)?1:0.22);
+  }
+})();
+
+/* =========================================================
+   4) نمودار میله‌ای — ساختارها
+   ========================================================= */
+(function buildBars(){
+  const box=document.getElementById('bars');
+  const max=Math.max(...STRUCTS.map(c=>c.minutes));
+  STRUCTS.forEach((c,i)=>{
+    const pct=(c.minutes/max)*100;
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`
+      <div class="bl" title="${c.name}">${c.name}</div>
+      <div class="track"><div class="fill" style="background:linear-gradient(90deg,${c.color},${c.color}aa)"></div></div>
+      <div class="bv">${durFa(c.minutes)}′</div>`;
+    box.appendChild(row);
+    const fill=row.querySelector('.fill');
+    setTimeout(()=>fill.style.width=pct+'%', 200+i*90);
+  });
+})();
+
+/* =========================================================
+   5) برترین برنامه‌ها
+   ========================================================= */
+(function buildTopPrograms(){
+  const box=document.getElementById('topPrograms');
+  const top=[...PROGRAMS].sort((a,b)=>b.minutes-a.minutes).slice(0,15);
+  const max=top[0].minutes;
+  top.forEach((p,i)=>{
+    const pct=(p.minutes/max)*100;
+    const color=(CLASS_META[p.cls]||{}).color||'#4f8cff';
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`
+      <div class="bl" title="${p.name}">${p.name}</div>
+      <div class="track"><div class="fill" style="background:linear-gradient(90deg,${color},${color}99)"></div></div>
+      <div class="bv">${durFa(p.minutes)}′ <span class="badge" style="background:${color}22;color:${color};border-color:${color}44">${p.cls}</span></div>`;
+    box.appendChild(row);
+    const fill=row.querySelector('.fill');
+    setTimeout(()=>fill.style.width=pct+'%', 200+i*70);
+  });
+})();
+
+/* =========================================================
+   6) پرتکرارترین موضوعات
+   ========================================================= */
+(function buildTopTopics(){
+  const box=document.getElementById('topTopics');
+  const max=TOP_TOPICS[0].freq;
+  TOP_TOPICS.forEach((t,i)=>{
+    const pct=(t.freq/max)*100;
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`
+      <div class="bl" title="${t.name}">${t.name}</div>
+      <div class="track"><div class="fill" style="background:linear-gradient(90deg,${t.color},${t.color}99)"></div></div>
+      <div class="bv">${toFa(t.freq)} رکورد</div>`;
+    box.appendChild(row);
+    const fill=row.querySelector('.fill');
+    setTimeout(()=>fill.style.width=pct+'%', 200+i*70);
+  });
+})();
+
+/* =========================================================
+   7) جدول طبقات
+   ========================================================= */
+(function buildClassTable(){
+  const tb=document.getElementById('classTbody');
+  CLASSES.forEach(c=>{
+    const pct=((c.minutes/TOTAL_MIN)*100).toFixed(1);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;
+           background:${c.color};box-shadow:0 0 9px ${c.color};margin-inline-end:8px"></span>طبقه ${c.name}</td>
+      <td>${toFa(c.count)}</td>
+      <td>${toFa(c.minutes)}</td>
+      <td><span class="mini-bar" style="width:${Math.max(pct*0.9,6)}px;background:${c.color}"></span>${toFa(pct)}٪</td>`;
+    tb.appendChild(tr);
+  });
+})();
+
+/* =========================================================
+   8) خط زمانی
+   ========================================================= */
+const TIMELINE = [
+  {date:'1405/01/01', title:'آغاز سال ۱۴۰۵', desc:'شروع ثبت برنامه‌های بانک کل', color:'#4f8cff',
+   items:['مناسبت ۱ (۵:۱۰)','تجمعات شبانه ۱ (۵۰ دقیقه)','ایران استوار (۵۰ دقیقه)']},
+  {date:'1405/02/01', title:'فصل بهار — اوج برنامه‌های ترکیبی', desc:'به ره و روناکی، ژین و ئه وین، سلام آبیدر', color:'#26d0a5',
+   items:['به ره و روناکی ۱','ژین و ئه وین .. ۱','سلام آبیدر ۱']},
+  {date:'1405/03/06', title:'عید قربان و مناسبت‌های مذهبی', desc:'دعای عرفه، عید قربان، محرم', color:'#ffb020',
+   items:['دعای عرفه و عید قربان','عید قربان (۱:۳۰)','محرم ۱۴۰۵ (۲۱:۰۰)']},
+  {date:'1405/04/15', title:'روایت حضور و باید برخواست', desc:'پوشش رویدادهای بزرگ', color:'#a78bfa',
+   items:['روایت حضور (۱:۰۰)','باید برخواست -- ۲ (۳:۳۰)','بر شانه‌هایمان آفتاب']},
+  {date:'1405/05/03', title:'اربعین مرز باشماق', desc:'۶ ساعت پوشش رویداد اربعین', color:'#22d3ee',
+   items:['اربعین مرز باشماق (۶:۰۰)','در مسیر وحدت','تجمعات شبانه سنندج']},
+  {date:'1405/06/01', title:'فصل تابستان — تنوع ساختاری', desc:'موج ورزش، ضربان، روشنا ۲', color:'#f472b6',
+   items:['موج ورزش ۲ - ۲','ضربان ۲ - ۲','روشنا ۲']},
+  {date:'1405/07/01', title:'پاییز — برنامه‌های تخصصی', desc:'گفتمان، ضران، ژین وئه ین ۳', color:'#84cc16',
+   items:['گفتمان','ضران','ژین وئه ین ۳']},
+  {date:'1405/08/01', title:'ادامه پوشش رویدادها', desc:'تجمعات شبانه ۳ و برنامه‌های جدید', color:'#ff6b8a',
+   items:['تجمعات شبانه ۳','په پوله کانی نیشتمان','ژین وئه ین ۳']}
+];
+
+(function buildTimeline(){
+  const box=document.getElementById('timeline');
+  TIMELINE.forEach(t=>{
+    const item=document.createElement('div');
+    item.className='tl-item';
+    item.style.setProperty('--dot', t.color);
+    const chips=t.items.map(x=>`<span class="chip"><i style="background:${t.color}"></i>${x}</span>`).join('');
+    item.innerHTML=`
+      <div class="tl-head">
+        <span class="tl-date">${faDate(t.date)}</span>
+        <span class="tl-tag" style="border-color:${t.color}55;color:${t.color}">${t.title}</span>
+        <span class="tl-num">${t.desc}</span>
+      </div>
+      <div class="chips">${chips}</div>`;
+    box.appendChild(item);
+  });
+})();
+
+/* =========================================================
+   9) جدول کامل برنامه‌ها
+   ========================================================= */
+(function buildDataTable(){
+  const tbody=document.getElementById('dataTbody');
+  const search=document.getElementById('search');
+  const filterClass=document.getElementById('filterClass');
+  const filterStruct=document.getElementById('filterStruct');
+
+  /* پر کردن فیلتر طبقه */
+  const allC=document.createElement('option');
+  allC.value='all'; allC.textContent='همهٔ طبقات';
+  filterClass.appendChild(allC);
+  CLASSES.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.name; o.textContent='طبقه '+c.name;
+    filterClass.appendChild(o);
+  });
+
+  /* پر کردن فیلتر ساختار */
+  const allS=document.createElement('option');
+  allS.value='all'; allS.textContent='همهٔ ساختارها';
+  filterStruct.appendChild(allS);
+  STRUCTS.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.name; o.textContent=s.name;
+    filterStruct.appendChild(o);
+  });
+
+  const norm=s=>String(s).replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/\u200c/g,' ').trim();
+
+  const rows=[...PROGRAMS].sort((a,b)=>b.minutes-a.minutes);
+
+  function render(){
+    const q=norm(search.value);
+    const cl=filterClass.value;
+    const st=filterStruct.value;
+    const list=rows.filter(p=>
+      (cl==='all'||p.cls===cl) &&
+      (st==='all'||p.struct===st) &&
+      (!q || norm(p.name).includes(q) || norm(p.struct).includes(q))
+    );
+
+    if(!list.length){
+      tbody.innerHTML=`<tr><td colspan="5" class="empty">موردی یافت نشد.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML=list.map(p=>{
+      const color=(CLASS_META[p.cls]||{}).color||'#4f8cff';
+      const structColor=(STRUCT_META[p.struct]||{}).color||'#94a3b8';
+      return `<tr>
+        <td>${p.name}</td>
+        <td><span class="badge" style="background:${color}22;color:${color};border-color:${color}44">${p.cls}</span></td>
+        <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${structColor};margin-inline-end:7px"></span>${p.struct}</td>
+        <td style="white-space:nowrap;font-weight:600">${durFa(p.minutes)}′</td>
+        <td>${toFa(p.topics)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  search.addEventListener('input', render);
+  filterClass.addEventListener('change', render);
+  filterStruct.addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>
